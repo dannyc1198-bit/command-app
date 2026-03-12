@@ -32,6 +32,14 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+
+# database
+*.db
+*.db-journal
+
+# claude code
+.claude/
 
 # vercel
 .vercel
@@ -39,3 +47,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/lib/generated/prisma
+
+# Windows reserved filenames
+nul
+nul.*
