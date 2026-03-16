@@ -1,71 +1,35 @@
-# Wavelength AI — Multi-Agent Command Intelligence Platform
+# Command — AI-Powered ADHD Productivity System
 
-> 5 specialist AI agents. One interface. Chat one-on-one or launch **Swarm Mode** for multi-agent collaboration on complex problems.
-
-[![Live Demo](https://img.shields.io/badge/Live_Demo-Coming_Soon-blue?style=for-the-badge)](#live-demo)
+> An AI executive assistant for ADHD entrepreneurs, built around the **NICE method**: Note, Investigate, Create, Execute.
 
 ![Next.js](https://img.shields.io/badge/Next.js_16-000000?style=flat-square&logo=next.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript_5-3178C6?style=flat-square&logo=typescript&logoColor=white)
-![React](https://img.shields.io/badge/React_19-61DAFB?style=flat-square&logo=react&logoColor=black)
-![Anthropic](https://img.shields.io/badge/Anthropic_Claude-D4A843?style=flat-square&logo=anthropic&logoColor=white)
-![OpenRouter](https://img.shields.io/badge/OpenRouter-6366F1?style=flat-square)
-![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=flat-square&logo=prisma&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS_4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
-![Stripe](https://img.shields.io/badge/Stripe-635BFF?style=flat-square&logo=stripe&logoColor=white)
-![Radix UI](https://img.shields.io/badge/Radix_UI-161618?style=flat-square)
-![Zustand](https://img.shields.io/badge/Zustand_5-433D3C?style=flat-square)
+![Anthropic](https://img.shields.io/badge/Claude_Sonnet-D4A843?style=flat-square&logo=anthropic&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma_+_SQLite-2D3748?style=flat-square&logo=prisma&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
 
 ---
 
 ## What It Does
 
-Wavelength AI is a full-stack SaaS platform that orchestrates multiple AI agents — each with a distinct personality, specialty, and underlying model — through a real-time streaming chat interface. Users interact with individual agents for focused tasks, or activate **Swarm Mode** to have multiple agents collaborate on complex, multi-dimensional problems with automatic synthesis of their responses.
+Command is a single-app productivity system that acts as an AI executive assistant. Instead of requiring you to organize, categorize, or prioritize — the AI does all of that. You just dump your thoughts and execute.
 
-The platform handles authentication, usage-based billing, conversation persistence, and real-time token-by-token streaming — all in a production-ready architecture.
+### The NICE Method
 
----
+| Stage | What Happens | Who Does It |
+|-------|-------------|-------------|
+| **N — Note** | Capture everything via text or voice | You |
+| **I — Investigate** | AI categorizes, prioritizes, estimates effort | Claude |
+| **C — Create** | AI builds your daily plan (money move + top 3) | Claude |
+| **E — Execute** | Focused single-task workflow, one at a time | You |
 
-## The Agents
+### Design Principles
 
-| Agent | Specialty | Model |
-|-------|-----------|-------|
-| 🦞 **Clawdy** | Command intelligence — strategic thinking, task orchestration, multi-domain analysis | Claude Sonnet 4.6 |
-| 🔍 **Hunter** | Lead generation — prospect research, cold outreach, pipeline building, CRM optimization | Claude via OpenRouter |
-| 📝 **Content** | Content & copy — blog posts, social media, email campaigns, brand voice | Claude via OpenRouter |
-| 🔨 **Builder** | Code & architecture — full-stack development, system design, database architecture | Claude via OpenRouter |
-| 🎵 **Vibration** | Frequencies & flow — mindset coaching, flow states, energy management | GPT-4o |
-
----
-
-## Key Features
-
-### Multi-Agent Chat
-- **Real-time streaming** — Token-by-token SSE responses with auto-save to database
-- **Markdown rendering** — Full GFM support with syntax-highlighted code blocks
-- **Conversation history** — Persistent chat sessions with auto-generated titles
-- **Model flexibility** — Agents route through OpenRouter for multi-model support (Claude, GPT-4o, Gemini)
-
-### Swarm Mode
-- Select 2–5 agents to collaboratively solve complex problems
-- **Sequential strategy** — Agents respond in order, each building on previous context
-- **Parallel strategy** — All agents respond simultaneously, then a synthesis agent unifies insights
-- Gated by subscription tier (Pro: 3 agents, Team: 5 agents)
-
-### Billing & Usage
-- Three subscription tiers: **Free** (25 msgs/mo), **Pro** (1,000 msgs/mo), **Team** (5,000 msgs/mo)
-- Stripe integration with checkout, customer portal, and webhook-driven subscription management
-- Visual usage meter with monthly auto-reset
-
-### Authentication
-- NextAuth v5 with credentials provider (email/password + bcrypt)
-- Optional OAuth (Google, GitHub)
-- JWT sessions with Prisma adapter
-
-### NICE Method (Productivity Framework)
-- **Note** → Capture raw thoughts and ideas
-- **Investigate** → AI categorizes, prioritizes, and estimates effort
-- **Create** → Generate structured action plans
-- **Execute** → Track progress, blockers, and outcomes
+- **Zero friction capture** — No forms, just dump thoughts
+- **AI does the thinking** — You don't categorize or organize
+- **ADHD-optimized** — External accountability, clear structure, visual progress
+- **Revenue-focused** — "Money moves" are first-class citizens
+- **One thing at a time** — Execute stage shows a single task only
 
 ---
 
@@ -73,100 +37,82 @@ The platform handles authentication, usage-based billing, conversation persisten
 
 ```
 app/
-├── (auth)/                 # Login, signup, onboarding
-├── (marketing)/            # Landing page, pricing
-├── (dashboard)/
-│   ├── chat/               # Agent selection + conversation UI
-│   ├── swarm/              # Multi-agent collaboration
-│   ├── settings/billing/   # Usage metrics + plan management
-│   └── nice/               # Note → Investigate → Create → Execute
+├── note/page.tsx              # NOTE stage UI
+├── investigate/page.tsx       # INVESTIGATE stage UI
+├── create/page.tsx            # CREATE stage UI
+├── execute/page.tsx           # EXECUTE stage UI
 ├── api/
-│   ├── chat/               # Conversations + streaming messages (SSE)
-│   ├── swarm/              # Multi-agent orchestration
-│   ├── stripe/             # Checkout, portal, webhooks
-│   ├── auth/               # NextAuth + signup
-│   └── user/               # Current user data
+│   ├── notes/                 # Create + list + get/delete notes
+│   ├── investigate/           # Single + batch AI investigation
+│   ├── plans/daily/           # Generate + fetch daily plans
+│   ├── execute/               # Current task, complete, stuck
+│   ├── coach/                 # AI coaching chat
+│   ├── patterns/              # Pattern recognition
+│   └── voice/transcribe/      # Whisper voice-to-text
 components/
-├── wavelength/             # App-specific (ChatView, SwarmLauncher, AgentGrid, etc.)
-└── ui/                     # Reusable primitives (Radix-based)
+├── shared/NiceNav.tsx         # NICE stage navigation
+└── ui/                        # shadcn/ui components
 lib/
-├── agents/                 # Agent definitions & system prompts
-├── ai/                     # Anthropic SDK + OpenRouter integration
-├── stores/                 # Zustand state (chat)
-├── billing/                # Usage tracking, plan limits
-└── swarm/                  # Swarm orchestration logic
+├── ai/investigate.ts          # AI note analysis logic
+├── ai/plan.ts                 # AI daily planning logic
+├── anthropic.ts               # Claude API client
+├── openai.ts                  # Whisper API client
+├── prisma.ts                  # Database client
+├── types/index.ts             # TypeScript types
+└── utils.ts                   # Utilities
 prisma/
-└── schema.prisma           # SQLite schema (users, conversations, messages, billing, NICE)
+└── schema.prisma              # SQLite schema
 ```
 
 ---
 
 ## Tech Stack
 
-| Layer | Technologies |
-|-------|-------------|
-| **Frontend** | Next.js 16, React 19, TypeScript 5, Tailwind CSS 4, Zustand 5, Radix UI |
-| **AI** | Anthropic Claude SDK, OpenRouter API (multi-model), OpenAI SDK |
-| **Backend** | Next.js API Routes, Server-Sent Events (SSE), NextAuth v5 |
+| Layer | Technology |
+|-------|-----------|
+| **Frontend** | Next.js 16, React 19, TypeScript 5, Tailwind CSS 4 |
+| **AI** | Anthropic Claude Sonnet (investigation + planning + coaching) |
+| **Voice** | OpenAI Whisper (speech-to-text capture) |
 | **Database** | SQLite via Prisma ORM |
-| **Payments** | Stripe (subscriptions, webhooks, customer portal) |
-| **UI** | Lucide icons, React Markdown + rehype-highlight, Sonner toasts |
+| **UI** | shadcn/ui, Lucide icons, Sonner toasts |
 
 ---
 
 ## Getting Started
 
 ### Prerequisites
-- Node.js 18+
-- npm or yarn
-
-### Installation
 
 ```bash
-# Clone the repository
+node >= 18.0.0
+npm >= 9.0.0
+```
+
+### Install
+
+```bash
 git clone https://github.com/dannyc1198-bit/command-app.git
 cd command-app
-
-# Install dependencies
 npm install
-
-# Set up environment variables
-cp .env.example .env.local
 ```
 
 ### Environment Variables
 
-```env
-# Database
-DATABASE_URL="file:./dev.db"
-
-# Authentication
-AUTH_SECRET="your-generated-secret"
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
-
-# AI
-OPENROUTER_API_KEY="your-openrouter-key"
-ANTHROPIC_API_KEY="your-anthropic-key"        # Optional: direct Claude access
-
-# Stripe
-STRIPE_SECRET_KEY="your-stripe-secret"
-STRIPE_WEBHOOK_SECRET="your-webhook-secret"
-STRIPE_PRO_PRICE_ID="your-pro-price-id"
-STRIPE_TEAM_PRICE_ID="your-team-price-id"
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="your-publishable-key"
-
-# OAuth (optional)
-GOOGLE_CLIENT_ID=""
-GOOGLE_CLIENT_SECRET=""
-GITHUB_CLIENT_ID=""
-GITHUB_CLIENT_SECRET=""
+```bash
+cp .env.example .env
 ```
 
-### Database Setup
+```env
+DATABASE_URL="file:./dev.db"
+ANTHROPIC_API_KEY="your-anthropic-key"
+OPENAI_API_KEY="your-openai-key"
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+```
+
+### Database
 
 ```bash
-npx prisma migrate dev
 npx prisma generate
+npx prisma db push
 ```
 
 ### Run
@@ -175,32 +121,41 @@ npx prisma generate
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
-
-### Production Build
-
-```bash
-npm run build
-npm run start
-```
+Open [http://localhost:3000](http://localhost:3000) — redirects to NOTE stage.
 
 ---
 
-## Live Demo
+## Data Models
 
-> 🚀 **Coming soon** — deployment in progress.
+- **Note** — Raw captured thoughts with status tracking through NICE stages
+- **Investigation** — AI analysis: type, category, priority, energy, time estimate
+- **Plan** — Daily/weekly plans linking investigations to scheduled work
+- **Execution** — Task progress: status, time spent, blockers, outcomes
+- **NiceSession** — Daily stage progression and energy tracking
+- **Pattern** — AI-detected behavioral patterns (procrastination, energy, etc.)
+- **Win** — Positive reinforcement tracking
+- **CoachingSession** — AI coaching conversation history
 
-<!-- Replace with live URL when deployed -->
-<!-- [wavelength.ai](https://wavelength.ai) -->
+---
+
+## API Routes
+
+| Method | Route | Description |
+|--------|-------|-------------|
+| `GET/POST` | `/api/notes` | List + create notes |
+| `GET/DELETE` | `/api/notes/[id]` | Get + delete note |
+| `POST` | `/api/investigate/single` | Investigate one note |
+| `POST` | `/api/investigate/batch` | Batch investigate all |
+| `GET/POST` | `/api/plans/daily` | Fetch + generate daily plan |
+| `GET` | `/api/execute/current` | Get current task |
+| `POST` | `/api/execute/complete` | Mark task complete |
+| `POST` | `/api/execute/stuck` | Report blocker |
+| `POST` | `/api/coach` | AI coaching chat |
+| `GET` | `/api/patterns` | Get detected patterns |
+| `POST` | `/api/voice/transcribe` | Voice-to-text |
 
 ---
 
 ## Built By
 
 **Danny Ciampelletti** — [GitHub](https://github.com/dannyc1198-bit)
-
----
-
-<p align="center">
-  <sub>Built with Next.js, Claude, and an unreasonable amount of caffeine.</sub>
-</p>

@@ -7,141 +7,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ============================================
-// WAVELENGTH AI - Auth & User Models
-// ============================================
-
-model User {
-  id               String   @id @default(uuid())
-  email            String   @unique
-  name             String?
-  image            String?
-  passwordHash     String?
-  subscriptionTier String   @default("free") // 'free' | 'pro' | 'team'
-  stripeCustomerId String?  @unique
-  messagesThisMonth Int     @default(0)
-  usageResetDate   DateTime @default(now())
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-
-  accounts      Account[]
-  sessions      Session[]
-  conversations Conversation[]
-  teamMembers   TeamMember[]
-
-  @@index([email])
-}
-
-model Account {
-  id                String  @id @default(uuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-  @@index([userId])
-}
-
-model Session {
-  id           String   @id @default(uuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-}
-
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
-}
-
-model Team {
-  id        String   @id @default(uuid())
-  name      String
-  ownerId   String
-  createdAt DateTime @default(now())
-
-  members TeamMember[]
-}
-
-model TeamMember {
-  id     String @id @default(uuid())
-  teamId String
-  userId String
-  role   String @default("member") // 'owner' | 'admin' | 'member'
-
-  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([teamId, userId])
-}
-
-// ============================================
-// WAVELENGTH AI - Chat Models
-// ============================================
-
-model Conversation {
-  id          String   @id @default(uuid())
-  userId      String
-  agentId     String
-  title       String   @default("New Chat")
-  isSwarm     Boolean  @default(false)
-  swarmAgents String?  // JSON array of agent slugs
-  model       String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  messages Message[]
-
-  @@index([userId])
-  @@index([updatedAt])
-}
-
-model Message {
-  id             String   @id @default(uuid())
-  conversationId String
-  role           String   // 'user' | 'assistant' | 'system'
-  content        String
-  agentId        String?
-  model          String?
-  tokenCount     Int      @default(0)
-  metadata       String?  // JSON
-  createdAt      DateTime @default(now())
-
-  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-
-  @@index([conversationId])
-  @@index([createdAt])
-}
-
-// ============================================
-// NICE Method Models (preserved from original)
-// ============================================
-
+// NICE Stage 1: Notes (Capture)
 model Note {
   id            String   @id @default(uuid())
   rawInput      String
-  inputType     String
+  inputType     String   // 'voice' | 'text' | 'quick_add'
   createdAt     DateTime @default(now())
-  status        String   @default("captured")
-  currentStage  String   @default("note")
+  status        String   @default("captured") // 'captured' | 'investigated' | 'planned' | 'executing' | 'done' | 'archived'
+  currentStage  String   @default("note") // 'note' | 'investigate' | 'create' | 'execute'
 
   investigation Investigation?
 
@@ -149,17 +22,18 @@ model Note {
   @@index([currentStage])
 }
 
+// NICE Stage 2: Investigations (AI Processing)
 model Investigation {
   id                  String   @id @default(uuid())
   noteId              String   @unique
   note                Note     @relation(fields: [noteId], references: [id], onDelete: Cascade)
 
   aiInterpretation    String
-  itemType            String
-  category            String
-  priority            String
-  complexity          String
-  energyRequired      String
+  itemType            String   // 'task' | 'idea' | 'question' | 'reference' | 'problem'
+  category            String   // 'money_move' | 'outreach' | 'build' | 'admin' | 'boredom' | 'someday'
+  priority            String   // 'critical' | 'high' | 'medium' | 'low'
+  complexity          String   // 'simple' | 'moderate' | 'complex'
+  energyRequired      String   // 'high' | 'medium' | 'low'
   timeEstimateMinutes Int
   needsBreakdown      Boolean  @default(false)
   processedAt         DateTime @default(now())
@@ -167,6 +41,7 @@ model Investigation {
   plans               Plan[]
 }
 
+// NICE Stage 3: Plans (Organization)
 model Plan {
   id               String   @id @default(uuid())
   investigationId  String
@@ -174,12 +49,12 @@ model Plan {
 
   title            String
   description      String
-  planType         String
+  planType         String   // 'daily' | 'weekly' | 'project'
   scheduledDate    DateTime?
   scheduledTime    String?
-  breakdownSteps   String?
+  breakdownSteps   String?  // JSON array
   contextNotes     String?
-  dependencies     String?
+  dependencies     String?  // JSON array of plan IDs
   createdAt        DateTime @default(now())
 
   execution        Execution?
@@ -187,22 +62,24 @@ model Plan {
   @@index([scheduledDate])
 }
 
+// NICE Stage 4: Executions (Doing)
 model Execution {
   id                  String   @id @default(uuid())
   planId              String   @unique
   plan                Plan     @relation(fields: [planId], references: [id], onDelete: Cascade)
 
-  status              String   @default("not_started")
+  status              String   @default("not_started") // 'not_started' | 'in_progress' | 'completed' | 'blocked' | 'snoozed'
   startedAt           DateTime?
   completedAt         DateTime?
   timeSpentMinutes    Int      @default(0)
   blockerDescription  String?
   outcomeNotes        String?
-  energyLevelActual   String?
+  energyLevelActual   String?  // 'high' | 'medium' | 'low'
 
   @@index([status])
 }
 
+// Daily NICE Sessions (Track flow through stages)
 model NiceSession {
   id                String   @id @default(uuid())
   date              DateTime @unique
@@ -222,9 +99,10 @@ model NiceSession {
   @@index([date])
 }
 
+// Pattern Recognition
 model Pattern {
   id              String   @id @default(uuid())
-  patternType     String
+  patternType     String   // 'procrastination' | 'energy' | 'productivity' | 'blocker'
   description     String
   observedCount   Int      @default(1)
   confidence      Float    @default(0.5)
@@ -237,20 +115,22 @@ model Pattern {
   @@index([isActive])
 }
 
+// Wins (Positive reinforcement)
 model Win {
   id          String   @id @default(uuid())
   description String
-  category    String
-  impact      String   @default("medium")
+  category    String   // 'outreach' | 'demo' | 'proposal' | 'closed_deal' | 'learning' | 'consistency'
+  impact      String   @default("medium") // 'small' | 'medium' | 'big'
   createdAt   DateTime @default(now())
 
   @@index([createdAt])
 }
 
+// Coaching Conversations
 model CoachingSession {
   id            String   @id @default(uuid())
-  sessionType   String
-  conversation  String
+  sessionType   String   // 'morning_plan' | 'stuck_support' | 'evening_review' | 'weekly_review' | 'general'
+  conversation  String   // JSON array of messages
   insights      String?
   createdAt     DateTime @default(now())
 
